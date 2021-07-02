@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Image, StatusBar } from "react-native";
 import data from "../data/data.json";
 import * as ICON from "../constants/icon";
 import * as COLOR  from "../constants/color";
-
+import * as Font from 'expo-font';
 const Header = () =>{
     return  (
         <View style={styles.wrap}>
@@ -26,14 +26,35 @@ const Title = () =>{
     )
 }
 export default class Cutlery extends React.Component{
+    constructor(){
+        super();
+        this.state = {
+            isReady: false
+        };
+    }
     render(){
-        return (
-            <View style={styles.container}>
-                <StatusBar />
-                <Header />
-                <Title />
-            </View>
-        )
+        if(this.state.isReady){
+            return (
+                <View style={styles.container}>
+                    <StatusBar />
+                    <Header />
+                    <Title />
+                </View>
+            )    
+        }else {
+            return null
+        }
+    }
+
+    componentDidMount() {
+        this.loadFont();
+    }
+
+    async loadFont() {
+        await Font.loadAsync({
+            openSansRegular: require('../assets/fonts/OpenSans-Semibold.ttf')
+          });
+          this.setState({ isReady: true });
     }
 }
 
@@ -71,6 +92,6 @@ const styles = StyleSheet.create({
     },
     title:{
         fontSize: 40,
-        fontWeight:"bold"
+        fontFamily: "openSansRegular"
     }
 })
