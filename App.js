@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import {createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as COLOR from "./constants/color";
-import * as ICON from "./constants/icon";
+import * as ICON  from "./constants/icon";
 import Cultery from "./screens/Cultery";
 import Account from "./screens/Account";
 import Heart from "./screens/Heart";

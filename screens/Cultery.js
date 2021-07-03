@@ -1,9 +1,11 @@
 import React from "react";
-import { StyleSheet, View, Text, Image, StatusBar } from "react-native";
-import data from "../data/data.json";
+import { StyleSheet, View, Text, Image, StatusBar, FlatList, TouchableOpacity } from "react-native";
+import * as data from "../data/data.js";
 import * as ICON from "../constants/icon";
 import * as COLOR  from "../constants/color";
 import * as Font from 'expo-font';
+import * as format from "../constants/format";
+
 const Header = () =>{
     return  (
         <View style={styles.wrap}>
@@ -18,27 +20,73 @@ const Header = () =>{
 
 const Title = () =>{
     return (
-    <View style={styles.wrapTitle}>
-        <Text style={styles.title}>Main</Text>
-        <Text style={styles.title}>Categories</Text>
-    </View>
+        <View style={styles.wrapTitle}>
+            <Text style={styles.title}>Main</Text>
+            <Text style={styles.title}>Categories</Text>
+        </View>
+    )
+}
 
+const Categories = (props) => {
+    const {setSelected, isActive} = props;
+    return (
+        <View>
+            <FlatList 
+                data={props.categoryData}
+                renderItem={({item, index}) =>{
+                    return <Category item={item} setSelected={setSelected} isActive={isActive}/>
+                }}
+                keyExtractor={(item) => `${item.id}`}
+                horizontal = {true}
+            />
+        </View>
+    )
+}
+
+const Category = (props) =>{
+    const {item, setSelected, isActive} = props;
+    const isSelected = isActive(item.id);
+    return (
+        <TouchableOpacity activeOpacity={0.7} onPress={()=>setSelected(item.id)}>
+            <View style={styles.wrapCategory(isSelected)}>
+                <View style={styles.containerCategoryImage(isSelected)}>
+                    <Image style={styles.categoryImage} source={item.icon}/>
+                </View>
+                <Text style={styles.categoryText(isSelected)}>{item.name}</Text>
+            </View>
+        </TouchableOpacity>
     )
 }
 export default class Cutlery extends React.Component{
     constructor(){
         super();
         this.state = {
-            isReady: false
+            isReady: false, 
+            categoryData: data.categoryData,
+            selected: 1
         };
     }
+
+    setSelected = (id) =>{
+        this.setState({
+            ...this.state,
+            selected: id
+        })    
+    }
+
+    isActive = (id) =>{
+        return id == this.state.selected;
+    } 
+
     render(){
         if(this.state.isReady){
+            const {categoryData} = this.state;
             return (
                 <View style={styles.container}>
                     <StatusBar />
                     <Header />
                     <Title />
+                    <Categories categoryData={categoryData} setSelected = {this.setSelected} isActive={this.isActive}/>
                 </View>
             )    
         }else {
@@ -77,8 +125,7 @@ const styles = StyleSheet.create({
         width:200,
         height:40,
         backgroundColor:COLOR.gray_light,
-        justifyContent:"center",
-        alignItems:"center",
+        ...format.center,
         padding:5,
         borderRadius: 50,
         borderColor: COLOR.black
@@ -91,7 +138,40 @@ const styles = StyleSheet.create({
         marginVertical: 10
     },
     title:{
-        fontSize: 40,
+        fontSize: 35,
         fontFamily: "openSansRegular"
+    },
+    wrapCategory:(isActive) =>{
+        return {
+            elevation: 2,
+            width:70,
+            height:120,
+            marginRight: 10,
+            padding: 5,
+            ...format.center,
+            borderRadius: 50,
+            backgroundColor: isActive ? COLOR.orange_light : COLOR.white
+        }
+    },
+    containerCategoryImage: (isActive)=>{
+        return {
+            width: 55,
+            height: 55,
+            backgroundColor: isActive ? COLOR.white : COLOR.gray_light,
+            borderRadius: 50,
+            ...format.center
+        }
+    },
+    categoryImage:{
+        width: 40,
+        height: 40
+    },
+    categoryText: (isActive) =>{
+        return {
+            color: isActive ? COLOR.white : COLOR.black,
+            marginTop:10,
+            fontSize: 12,
+            fontWeight: "bold"
+        }
     }
 })
