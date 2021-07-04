@@ -5,12 +5,14 @@ import * as COLOR  from "../constants/color";
 import Header from "../components/Cutlery/Header"
 import Title from "../components/Cutlery/Title"
 import Categories from "../components/Cutlery/Categories"
+import Restaurants from "../components/Cutlery/Restaurants"
 export default class Cutlery extends React.Component{
     constructor(){
         super();
         this.state = {
             categoryData: data.categoryData,
-            selected: 1
+            selected: 2,
+            restaurantData: data.restaurantData
         };
     }
 
@@ -25,14 +27,27 @@ export default class Cutlery extends React.Component{
         return id == this.state.selected;
     } 
 
+    getNameCategory = (ids) => {
+        let arr = [];
+        this.state.categoryData.forEach((item)=>{
+            if(ids.includes(item.id)){
+                arr.push(item.name);
+            }
+        })
+        return arr;
+    }
+
     render(){
-        const {categoryData} = this.state;
+        const {categoryData, restaurantData, selected} = this.state;
         return (
             <View style={styles.container}>
                 <StatusBar />
                 <Header />
                 <Title />
                 <Categories categoryData={categoryData} setSelected = {this.setSelected} isActive={this.isActive}/>
+                <Restaurants restaurants={restaurantData.filter((item) =>{
+                    return item.categories.includes(selected)
+                })} getNameCategory={this.getNameCategory}/>
             </View>
         )    
     }
